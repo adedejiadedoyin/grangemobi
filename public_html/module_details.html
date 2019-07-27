@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Module</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="css/app.css" rel="stylesheet">
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7nNvNsgVotcvQQmKtPhipmRtoCnkeBDI"></script>
+ <script src="js/app.js"></script>
+</head>
+
+<body>
+    
+    
+  <!-- Navigation -->
+  <nav  class="shadow navbar navbar-expand-xl  fixed-top" style="background-color:#efefef;">
+     <a href="#" class="btn btn-sm btn-danger float-left" onclick="goBack()" style=""><i class="fa fa-times" aria-hidden="true"></i> Close</a>
+</nav>
+    
+  
+  
+  
+  <div class="module_content">
+      
+          <div class="card moduleCard text-white">
+              <div  class="card-body"><h5 id="mname_info" class="card-title">Digital Asset Management</h5>
+                  <p id="mcode_info" class="card-text"> Module Code: 999001</p>
+              </div>
+          </div>
+                    
+          <div style="margin-top: 30px">
+                <ul class="list-group">
+                    <li id="credit_info"  class="list-group-item">Credits: 15</li>
+                    <li id="web_info" class="list-group-item">Website: <a href=""> www.asaro.com</a></li>
+                    <li id="duedate_info" class="list-group-item">Due date: blablah blah</li>
+                </ul>
+          </div>
+                
+          <div style="margin-top: 30px">
+            <h6 style="padding-left: 10px;padding-bottom: 5px; color: #B80672 ;font-size: 20px">Lecturer</h6>
+            <ul id="lecturersList" class="list-group">
+
+                <li  class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <img id="userProfilePic" src="img/photo.jpg" alt="John" style="width:30px ; height: 30px; border-radius: 50%;">  
+                        <span id="lec_info" style="margin-left:15px">Cras justo</span>
+                    </div>  
+                    <a id="lec_email_info" href="mailto:someone@example.com?" target="_top"><i class="fa fa-envelope" aria-hidden="true" style="color:gray"></i> </a>
+                </li>
+            </ul>
+          </div>
+                
+          <div style="margin-top: 30px">
+                <h6 style="padding-left: 10px;padding-bottom: 5px; color: #B80672 ;font-size: 20px">Location</h6>
+                <div id="googleMap" style="width:100%;height:200px; margin-top: 20px"></div>
+           </div>
+      
+  </div>
+  
+  
+
+  
+
+<script>
+    
+    var lat;
+    var long;
+    var date;
+    var user_id;
+    
+    
+    
+    // Fetch the user profile data from facebook
+    function getFbUserData(){
+        FB.api('/me', {locale: 'en_US', fields: 'id,first_name,last_name,email,link,gender,locale,picture'},
+        function (response) {
+            //set user_id
+            user_id= response.id;
+
+        });
+    }
+    
+    
+    
+   
+    viewModule(getUrlParameter('module_id'));
+   
+    function viewModule(_module_id){ 
+        
+        var data = { 
+            module_id: _module_id
+        };
+        
+         $.getJSON('php/json-data-module_details.php',data, function(result) { 
+             
+                $.each(result.module, function(index, module) {  
+                       $('#mname_info').text(module.moduleName);
+                       $('#mcode_info').text("Module Code: " + module.moduleNo);
+                       $('#credit_info').text("Credits: " + module.credits);
+                       $('#web_info a').text(module.website);
+                       $('#web_info a').attr("href", "http://"+module.website);
+                       
+                       date=new Date(module.dueDate);
+                       $('#duedate_info').text("Due date: " + formatDate(date.toDateString()));
+                       
+                       $('#lec_info').text(module.firstName + " " + module.lastName);
+                       $('#lec_email_info').attr("href", "mailto:"+module.email);
+                       
+                       lat= module.lat;
+                       long= module.long;
+                       myMap();
+                });
+         });
+    }
+    
+   
+   
+   
+   function myMap() {
+        var mapProp= {
+          center:new google.maps.LatLng(lat,long),
+          zoom:15,
+        };
+        
+        //alert("i got here: " + lat + " and: " + long );
+        
+        var marker = new google.maps.Marker({
+                        position:new google.maps.LatLng(lat,long),
+                        animation:google.maps.Animation.BOUNCE
+                      });
+
+                      
+        
+        var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
+        marker.setMap(map);
+   }
+   
+   
+   
+   function formatDate(date){
+     var mydate = new Date(date);
+    // replace first nonspace combination along with whitespace
+    return mydate.toDateString().replace(/^\S+\s/,'');
+ }
+   
+ 
+</script>
+
+
+
+
+
+</body>
+
+</html>

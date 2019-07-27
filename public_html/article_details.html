@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Article</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="css/app.css" rel="stylesheet">
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+ <script src="js/app.js"></script>
+</head>
+
+<body>
+  
+  
+ <div id="myArticlePopup" class="articlePopup">
+      <!-- Article Popup Navigation -->
+
+
+       <!-- video if available for the article-->
+       <div class="video"> </div>
+       <div class="image"></div>
+       <div id="newsBody">
+            <h2 class="newsTitle"></h2>
+             <p class="newsStory"> </p>
+       </div>
+
+ </div>
+  
+  
+
+  
+
+<script>
+   
+    viewArticle(getUrlParameter('article_id'));
+
+    function viewArticle(article_id){ 
+        
+        var url = 'php/json-data-article.php';
+        
+        var data = {
+          id: article_id
+        };
+
+        $.getJSON(url, data,function(response) { 
+                    $.each(response.article, function(index, article) {
+                        
+                        $('.articlePopup').append( '<div class=" shadow fixed-top popupNav" style="background-color: #efefef">' + 
+                                                        '<a href="#" class="btn btn-sm btn-danger float-left" onclick="goBack()" style="margin:10px"><i class="fa fa-times" aria-hidden="true"></i> Close</a>' +
+                                                   '</div>'                                
+                                            );
+                       
+                       if (article.has_video==1){
+                            $('.video').append('<video class="mx-auto" width="320" height="240" controls style="display: block">' +
+                                                        '<source src="'+article.video_link+'" type="video/mp4">' +
+                                                        'Your browser does not support the video tag.' +
+                                                   '</video>'
+                                                   );
+                        }else{
+                            $('.image').append( '<img src="'+ article.img_link  + '" class="img-fluid" alt="Responsive image">');
+                        }
+        
+                        
+                        $(".newsTitle").text( article.title );
+                        $(".newsStory").text( article.content );
+                       // alert("For Testing:i got here again");
+                    });
+         });
+         
+         document.getElementById("myArticlePopup").style.width = "100%";
+    }
+    
+    
+ 
+ 
+</script>
+
+
+<script src="https://maps.googleapis.com/maps/api/js?key=INSERTKEY&callback=myMap"></script>
+
+
+</body>
+
+</html>

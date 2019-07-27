@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>My Modules</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="css/app.css" rel="stylesheet">
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script src="js/vendor/bootbox.min.js"></script>
+ <script src="js/app.js"></script>
+</head>
+
+<body>
+    
+    
+    <div id="mySidenav" class="sidenav" style="z-index: 99999999">
+      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+      
+      
+      <div class="profileCard" style="">
+                <img id="userProfilePic" src="" alt="John" style="width:80px ; height: 80px; border-radius: 50%;">
+                <h4>John Doe</h4>
+                <p>Email</p>
+                <button onclick="fbLogout()" class="btn btn-danger btn-sm">Logout</button>
+      </div>
+      
+      <hr class="style1">
+      
+      <div style="margin-top: 30px">
+          <a class="nav-link " href="home.html"><i class="fa fa-newspaper-o"></i> News</a>
+          <a class="nav-link active" href="javascript:void(0)" onclick="closeNav()"><i class="fa fa-modx"></i> Modules</a>
+          <a class="nav-link" href="timetable.html"><i class="fa fa-table"></i> Timetable</a> 
+      </div>
+      
+      <hr class="style1">
+      
+      <div style="margin-top: 20px" id="sidenav_module_list">
+          <!-- Insert my modules here -->
+      </div>
+      
+    </div>
+    
+ <!-- Navigation -->
+<nav id="myNavbar" class="shadow navbar fixed-top">
+    <button class="openbtn" onclick="openNav()">&#9776;</button> 
+    <p class="nav-title">My Modules</p>
+    <a href="search.html" class="" style="margin-left: auto;color: #343a40;"> <i class="fa fa-plus"></i></a>
+</nav>
+    
+  
+  <!-- Contents Container -->
+  <div class="mx-auto" style="">
+        
+      <!-- Contents -->
+      <div id="moduleCardDeck">
+          <!-- Each module goes here -->
+      </div>     
+      
+  </div>
+  
+  
+  
+ <!-- Dark Overlay element -->
+  <div class="overlay"></div>  
+   
+  
+  
+  
+
+<script>
+    
+    var user_id;
+    
+
+  
+    // Fetch the user profile data from facebook
+    function getFbUserData(){
+        FB.api('/me', {locale: 'en_US', fields: 'id,first_name,last_name,email,link,gender,locale,picture'},
+        function (response) {
+            var img_url = response.picture.data.url;
+            $("#avatar").attr("src",img_url);
+            $("#userProfilePic").attr("src",img_url);
+            
+            $(".profileCard h4").text(response.first_name + ' ' + response.last_name);
+                $(".profileCard p").text(response.email);
+            
+            //set user_id
+            user_id= response.id;
+            
+            //populate module in sidenav
+            populateSideNavModule(response);
+            
+            getModules(response);
+        });
+    }
+
+
+
+    function getModules(userData){ 
+        
+        var data = { 
+            userID: userData.id
+        };
+        
+        
+         $.getJSON('php/json-data-userModules.php',data, function(result) {
+             
+             
+                // add an alert
+                $('#moduleCardDeck').append('<div class="alert alert-info" role="alert">' +
+                                                'Your module list is empty,click on the button above to add a module'+
+                                              '</div>'
+                                      );
+             
+             
+                $.each(result.userModules, function(index, module) { 
+                    
+                        // remove any alert from the DOM
+                        $(".alert").remove();
+                        $('#moduleCardDeck').append(
+                                          '<div class="card mx-auto moduleCard text-white" style="max-width: 40rem;" data-id="'+module.moduleNo+'">' +
+                                            '<div class="dropdown">' + 
+                                                '<a id="dropdownMenuLink" href="javascript:void(0)" class="more" role="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >' + 
+                                                    '<i class="fa fa-ellipsis-v"></i>' + 
+                                                '</a>' +
+                                                '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
+                                                    '<a onclick="deleteModule('+ module.moduleNo + ')" class="dropdown-item" href="javascript:void(0)">Delete</a>'+
+                                                '</div>'+
+                                            '</div>'+
+                                            '<div class="card-body" '+  'onclick="viewModule('+module.moduleNo+')"' + '>'+
+                                              '<h5 class="card-title">'+module.moduleName +'</h5>'+
+                                              '<p class="card-text">'+module.firstName + ' ' + module.lastName +'</p>'+
+                                            '</div>' +
+                                          '</div>' 
+                          );
+                });
+         });
+    }
+    
+    
+    
+    
+    
+    
+    function viewModule(moduleNo){
+       window.open("module_details.html?module_id=" + moduleNo,"_self");
+    }
+     
+     
+     function deleteModule(_module_id){
+            var url = 'php/json-data-module-delete.php';
+            var module_id=_module_id;
+
+            var data = {
+              moduleCode: module_id,
+              userID: user_id
+            };
+
+            $.getJSON(url, data,function(response) { 
+                    if(response.success==1){
+                        
+                        //show alert message to user
+                        bootbox.alert({
+                            message: "Module will be removed from your list",
+                            size: 'small',
+                            callback: function () {
+                                location.reload();
+                            }
+                        });
+                    }
+
+             });
+     }
+     
+    
+ 
+</script>
+
+
+</body>
+
+</html>

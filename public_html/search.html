@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Search</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="css/app.css" rel="stylesheet">
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script src="js/vendor/bootbox.min.js"></script>
+  <script src="js/app.js"></script>
+</head>
+
+<body>
+    
+    
+ <!-- Navigation -->
+ <nav id="myNavbar" class="shadow navbar navbar-expand-xl  fixed-top">
+     <a href="#" class="btn btn-sm btn-danger float-left" onclick="goBack()" style=""><i class="fa fa-times" aria-hidden="true"></i> Close</a>
+</nav>
+ 
+
+ <div class="container" style="padding:40px 10px 20px 10px">
+  
+    
+     
+     <div  style="margin-bottom: 50px;">
+         <p class="font-italic">Ask your lecturer for the module code, then enter it here </p>
+         <div class="input-group">
+            <input id="moduleCode" type="text" class="form-control" placeholder="Enter module code">
+            <div class="input-group-append">
+              <button id="addButton" class="btn btn-secondary" type="button">
+                <i class="fa fa-plus"></i>
+              </button>
+            </div>
+        </div>
+         
+     </div>
+     
+  
+     
+     <hr class="style14">
+     
+     
+     <div  style="margin-top: 50px;">
+         <p class="font-italic">Or just search the module by module's name </p>
+         <div class="form-group has-search searchBox">
+            <span class="fa fa-search form-control-feedback"></span>
+            <input type="text" class="form-control" placeholder="Search">
+            <div class="result"></div>
+        </div>
+     </div>
+     
+   
+    
+ </div>
+ 
+
+  
+  
+  
+
+<script>
+    
+    
+    var user_id;
+ 
+
+    // Fetch the user profile data from facebook
+    function getFbUserData(){
+        FB.api('/me', {locale: 'en_US', fields: 'id,first_name,last_name,email,link,gender,locale,picture'},
+        function (response) {
+            
+            //set user_id
+            user_id= response.id;
+           //addModule(response);
+        });
+    }
+
+
+
+
+    $(document).ready(function () {
+
+
+            $('#addButton').on('click', function () {
+                  var code= $("#moduleCode").val(); 
+                  
+                  if($("#moduleCode").val() == ""){
+                        bootbox.alert({
+                            message: "Field cannot be empty",
+                            size: 'small'
+                        });
+                       //bootbox.alert("Field cannot be empty");
+                   }else{
+                       addModule(code);
+                   }
+                  
+            });
+
+            $('#searchButton').on('click', function () {
+                  var string= $("#moduleString").val();
+            });
+
+
+      });
+    
+    
+    
+    
+    function addModule(moduleCode) {
+
+        
+            var url = 'php/json-data-module-insert.php';
+            var data = {
+                    moduleCode: moduleCode,
+                    user_id: user_id
+            };
+            
+
+            $.getJSON(url,data,function(response) {
+                
+                bootbox.alert({
+                    message: response.message,
+                    size: 'small',
+                    callback: function () {
+                        window.history.back();
+                    }
+                });
+                
+            });
+
+    }
+    
+    
+    
+    
+    
+</script>
+
+</body>
+
+</html>

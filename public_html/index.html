@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Login</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="css/app.css" rel="stylesheet">
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+
+<body style="background-color: #e9ecef;">
+
+    
+    
+    <div>
+        <h2 style="text-align: center"> GrangeMobi </h2>
+    </div>
+    
+    <div style=" margin-top:40px; margin-bottom:40px;  padding-left: 40px; padding-right: 40px">
+        <img class="d-block w-50 mx-auto" src="img/index2.png" alt="img" style=""> 
+    </div>
+    
+
+    <!-- Facebook login or logout button -->
+    <button class="loginBtn loginBtn--facebook mx-auto" onclick="fbLogin()" id="fbLink" style="display: block">Login with Facebook</button>
+    
+
+    
+    
+    
+    <script>
+        
+        window.fbAsyncInit = function() {
+        // FB JavaScript SDK configuration and setup
+        FB.init({
+          appId      : '899019800301493', // FB App ID
+          cookie     : true,  // enable cookies to allow the server to access the session
+          xfbml      : true,  // parse social plugins on this page
+          version    : 'v3.2' // use graph api version 3.2
+        });
+
+        // Check whether the user already logged in
+        FB.getLoginStatus(function(response) {
+            if (response.status === 'connected') {
+                //launch home (News) page/screen
+                window.open("home.html?t=" + Math.random(),"_self");
+            }else{
+               // alert('User cancelled login or did not fully authorize.');
+            }
+        });
+    };
+
+    // Load the JavaScript SDK asynchronously
+    (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "//connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+    // Facebook login with JavaScript SDK
+    function fbLogin() {
+        FB.login(function (response) {
+            if (response.authResponse) {
+                //launch home (News) page/screen
+                window.open("home.html?t=" + Math.random(),"_self");
+            } else {
+                 alert('User cancelled login or did not fully authorize.');
+            }
+        }, {scope: 'email'});
+    }
+    
+  
+    </script>
+
+</body>
+
+</html>
